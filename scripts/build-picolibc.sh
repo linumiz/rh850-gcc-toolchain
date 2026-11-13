@@ -7,13 +7,14 @@ set -eu
 TC=$(realpath "$1"); SRC=$(realpath "$2"); W=$3
 mkdir -p "$W"; W=$(realpath "$W")
 B=$W/picolibc-build
+BIN=${PICOLIBC_BIN:-$TC/bin}
 rm -rf "${B:?}"; mkdir -p "$B"
 cat > "$W/cross.txt" <<CROSS
 [binaries]
-c = '$TC/bin/v850-elf-gcc'
-ar = '$TC/bin/v850-elf-ar'
-nm = '$TC/bin/v850-elf-nm'
-strip = '$TC/bin/v850-elf-strip'
+c = '$BIN/v850-elf-gcc'
+ar = '$BIN/v850-elf-ar'
+nm = '$BIN/v850-elf-nm'
+strip = '$BIN/v850-elf-strip'
 
 [host_machine]
 system = 'none'
@@ -39,5 +40,5 @@ meson setup --cross-file "$W/cross.txt" \
 	"$B" "$SRC" > "$W/picolibc-setup.log"
 ninja -C "$B" -j "${JOBS:-32}" > "$W/picolibc-build.log"
 meson install -C "$B" --quiet
-git -C "$SRC" rev-parse HEAD > "$TC/v850-elf/picolibc-commit.txt"
+echo "${PICOLIBC_COMMIT:-$(git -C "$SRC" rev-parse HEAD)}" > "$TC/v850-elf/picolibc-commit.txt"
 echo "picolibc $(cat "$TC/v850-elf/picolibc-commit.txt") installed in $TC/v850-elf"

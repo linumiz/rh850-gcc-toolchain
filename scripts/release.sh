@@ -1,15 +1,14 @@
 #!/bin/bash
-# release.sh <v1.0.0 tarball> <picolibc src> <out dir>
-# v1.1.0 = the v1.0.0 toolchain (same binutils, GCC, GDB binaries) plus
-# picolibc for every GCC multilib. Run inside the image of ./Dockerfile.
+# release.sh <source dir> <work dir> <out dir>
+# v1.2.0: build the toolchain from the release source archives and pack it.
+# Run inside the image of ./Dockerfile with /opt/toolchains/v850-elf
+# writable and empty.
 set -eu
-TAR=$(realpath "$1"); SRC=$(realpath "$2"); OUT=$3
-mkdir -p "$OUT"; OUT=$(realpath "$OUT")
+SRC=$(realpath "$1"); W=$2; OUT=$3
+mkdir -p "$W" "$OUT"; W=$(realpath "$W"); OUT=$(realpath "$OUT")
 HERE=$(dirname "$(realpath "$0")")
-TC=$OUT/stage/opt/toolchains/v850-elf
-rm -rf "${OUT:?}/stage" "$OUT/work"; mkdir -p "$TC"
-tar -xzf "$TAR" -C "$TC"
-"$HERE/build-picolibc.sh" "$TC" "$SRC" "$OUT/work"
+TC=/opt/toolchains/v850-elf
+"$HERE/build-toolchain.sh" "$SRC" "$W"
 tar -czf "$OUT/v850-elf-toolchain-linux-x86_64.tar.gz" --owner=0 --group=0 \
 	--sort=name --mtime=@0 -C "$TC" .
 (cd "$OUT" && sha256sum v850-elf-toolchain-linux-x86_64.tar.gz > SHA256SUMS)
