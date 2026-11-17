@@ -60,3 +60,7 @@ Build v1.2.0 from the release source archives (scripts/; byte-identical result):
   cat rel/SHA256SUMS
 
 Build v1.1.0: see the scripts and README of tag v1.1.0.
+
+Copyright 2026 Linumiz. License: Apache-2.0 for the build scripts and Dockerfile in
+this repository. The components keep their own: GPL for GCC, binutils, GDB and QEMU,
+BSD for picolibc.
